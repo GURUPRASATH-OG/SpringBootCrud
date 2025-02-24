@@ -113,47 +113,50 @@
 
 <script>
     function uploadFile() {
-        const fileInput = document.getElementById('fileInput');
-        const file = fileInput.files[0];
-        if (!file) {
-            alert("Please select a file to upload.");
-            return;
-        }
+    const fileInput = document.getElementById('fileInput');
+    const file = fileInput.files[0];
 
-        const reader = new FileReader();
-        reader.onload = function(event) {
-            const fileContent = event.target.result.split(",")[1]; // Convert file to Base64
+    if (!file) {
+        alert("Please select a file to upload.");
+        return;
+    }
 
-            const data = {
-                message: "Adding AEM JAR file",
-                content: fileContent,
-                branch: "main"
-            };
+    const reader = new FileReader();
+    reader.onload = function(event) {
+        const fileContent = btoa(event.target.result); // Convert to Base64
 
-            fetch("https://api.github.com/repos/GURUPRASATH-OG/SpringBootCrud/contents/aem-quickstart.jar", {
-                method: "PUT",
-                headers: {
-                    "Authorization": "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",
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(data)
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.content && data.content.download_url) {
-                    alert("Upload successful! Download your file from: " + data.content.download_url);
-                } else {
-                    alert("Error uploading file: " + JSON.stringify(data));
-                }
-            })
-            .catch(error => {
-                console.error("Error:", error);
-                alert("Upload failed.");
-            });
+        const data = {
+            message: "Uploading AEM JAR",
+            content: fileContent,
+            branch: "main"
         };
 
-        reader.readAsDataURL(file);
-    }
+        fetch("https://api.github.com/repos/GURUPRASATH-OG/SpringBootCrud/contents/aem-quickstart.jar", {
+            method: "PUT",
+            headers: {
+                "Authorization": "Bearer ghp_YOUR_PERSONAL_ACCESS_TOKEN",
+                "Content-Type": "application/json",
+                "Accept": "application/vnd.github.v3+json"
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.content && data.content.download_url) {
+                alert("Upload successful! Download your file from: " + data.content.download_url);
+            } else {
+                alert("Error uploading file: " + JSON.stringify(data));
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            alert("Upload failed.");
+        });
+    };
+
+    reader.readAsBinaryString(file);
+}
+
 </script>
 
 </body>
