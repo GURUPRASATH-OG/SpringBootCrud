@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SpringBoot Project</title>
+    <title>Spring Boot Project</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -18,7 +18,7 @@
             text-align: center;
         }
         h1 {
-            font-size: 2.5rem;
+            font-size: 2rem;
         }
         .container {
             display: flex;
@@ -42,18 +42,37 @@
             font-size: 1rem;
             color: #555;
         }
-        .download-section {
+        .upload-section, .download-section {
             text-align: center;
             margin-top: 30px;
         }
-        .download-section a {
-            background-color: #4CAF50;
+        .upload-section input {
+            margin: 10px;
+            padding: 10px;
+        }
+        .upload-section button {
+            background-color: #007bff;
             color: white;
             padding: 10px 20px;
             font-size: 1.2rem;
             border-radius: 5px;
+            border: none;
+            cursor: pointer;
+        }
+        .upload-section button:hover {
+            background-color: #0056b3;
+        }
+        .download-section a {
+            display: block;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 5px;
             text-decoration: none;
-            margin-top: 20px;
+            margin: 10px auto;
+            width: 250px;
+            text-align: center;
         }
         .download-section a:hover {
             background-color: #45a049;
@@ -67,7 +86,6 @@
 </header>
 
 <div class="container">
-    <!-- Replace the src with your actual screenshot URLs from GitHub or local paths -->
     <div class="image-container">
         <img src="image1.png" alt="Screenshot 1">
         <p>Screenshot 1</p>
@@ -80,22 +98,63 @@
         <img src="image3.png" alt="Screenshot 3">
         <p>Screenshot 3</p>
     </div>
-    <!-- Add more images as needed -->
+</div>
+
+<div class="upload-section">
+    <h2>Upload AEM JAR File</h2>
+    <input type="file" id="fileInput">
+    <button onclick="uploadFile()">Upload</button>
 </div>
 
 <div class="download-section">
-    <!-- Link to your JAR file (replace the link with your actual file location on GitHub or a local path) -->
-    <a href="https://github.com/GURUPRASATH-OG/SpringBootCrud/raw/main/SpringBootCRUD.rar" download>Download JAR File</a>
-
-
-    <a href="https://github.com/GURUPRASATH-OG/SpringBootCrud/raw/main/springboot-0.0.1-SNAPSHOT.z02" download>Download JAR File</a>
-
-    <a href="https://github.com/GURUPRASATH-OG/SpringBootCrud/raw/main/springboot-0.0.1-SNAPSHOT.zip" download>Download JAR File</a>
-
-
-    <a href=" https://github.com/GURUPRASATH-OG/SpringBootCrud/raw/main/springboot-0.0.1-SNAPSHOT.z01"download>Download JAR File</a>
-
+    <h2>Download AEM JAR File</h2>
+    <a href="https://github.com/GURUPRASATH-OG/SpringBootCrud/raw/main/aem-quickstart.jar" download>📂 Download AEM JAR</a>
 </div>
+
+<script>
+    function uploadFile() {
+        const fileInput = document.getElementById('fileInput');
+        const file = fileInput.files[0];
+        if (!file) {
+            alert("Please select a file to upload.");
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const fileContent = event.target.result.split(",")[1]; // Convert file to Base64
+
+            const data = {
+                message: "Adding AEM JAR file",
+                content: fileContent,
+                branch: "main"
+            };
+
+            fetch("https://api.github.com/repos/GURUPRASATH-OG/SpringBootCrud/contents/aem-quickstart.jar", {
+                method: "PUT",
+                headers: {
+                    "Authorization": "Bearer YOUR_GITHUB_PERSONAL_ACCESS_TOKEN",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.content && data.content.download_url) {
+                    alert("Upload successful! Download your file from: " + data.content.download_url);
+                } else {
+                    alert("Error uploading file: " + JSON.stringify(data));
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("Upload failed.");
+            });
+        };
+
+        reader.readAsDataURL(file);
+    }
+</script>
 
 </body>
 </html>
