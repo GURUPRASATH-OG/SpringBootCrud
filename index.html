@@ -112,7 +112,7 @@
 </div>
 
 <script>
-    function uploadFile() {
+function uploadFile() {
     const fileInput = document.getElementById('fileInput');
     const file = fileInput.files[0];
 
@@ -122,19 +122,20 @@
     }
 
     const reader = new FileReader();
+
     reader.onload = function(event) {
-        const fileContent = btoa(event.target.result); // Convert to Base64
+        const base64Content = event.target.result.split(",")[1]; // Extract Base64 data
 
         const data = {
-            message: "Uploading AEM JAR",
-            content: fileContent,
+            message: "Uploading " + file.name,
+            content: base64Content, // Base64-encoded file content
             branch: "main"
         };
 
-        fetch("https://api.github.com/repos/GURUPRASATH-OG/SpringBootCrud/contents/"+file.name, {
+        fetch(`https://api.github.com/repos/GURUPRASATH-OG/SpringBootCrud/contents/${file.name}`, {
             method: "PUT",
             headers: {
-                "Authorization": "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",
+                "Authorization": "Bearer ghp_YOUR_PERSONAL_ACCESS_TOKEN",
                 "Content-Type": "application/json",
                 "Accept": "application/vnd.github.v3+json"
             },
@@ -145,6 +146,7 @@
             if (data.content && data.content.download_url) {
                 alert("Upload successful! Download your file from: " + data.content.download_url);
             } else {
+                console.error("Error response:", data);
                 alert("Error uploading file: " + JSON.stringify(data));
             }
         })
@@ -154,7 +156,7 @@
         });
     };
 
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(file); // Correct method for Base64 encoding
 }
 
 </script>
